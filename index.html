@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <meta charset="UTF-8">
+  <title>BMI Calculator / Pengira BMI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  /* === Global Styles === */
+  body {
+    background-color: #EBD6FB;
+    font-family: Calibri, sans-serif;
+    font-size: 20px;
+  }
+
+  h1 { font-size: 30px; font-weight: bold; }
+  h2, h4, h5, label, .btn, .list-unstyled li { font-size: 20px; }
+  #height, #weight { font-size: 18px; }
+
+  /* === Typography === */
+  .result {
+    font-size: 25px;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .symbol {
+    font-size: 25px;
+    font-weight: bold;
+  }
+
+  .label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #555;
+  }
+
+  /* === Boxed Section === */
+.boxed {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-top: 0;
+  margin-right: auto;
+  margin-bottom: 30px; /* jarak antara kotak */
+  margin-left: auto;
+  transition: box-shadow 0.3s ease;
+  max-width: 660px;
+  text-align: left;
+}
+
+
+  .boxed:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+
+  /* === Result Section === */
+  .result-section {
+    text-align: left;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .result-title {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .result-box {
+    margin: 10px auto;
+    padding: 10px 20px;
+    display: inline-block;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.2em;
+  }
+
+  /* === Buttons === */
+  .floating-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 13px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 99px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .floating-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  }
+
+  #language-toggle {
+  position: fixed;
+  top: 55px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 13px;   /* dulu 10px 20px → lebih kecil */
+  font-size: 15px;     /* dulu 18px */
+  font-weight: 500;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#language-toggle:hover {
+  background-color: #5a6268;
+  transform: scale(1.05);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+
+
+  /* === Icon Positioning === */
+  .icon-center {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    text-align: center;
+  }
+
+  /* === Animation === */
+  .animasi-img {
+    animation: pulseScale 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseScale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* === Responsive === */
+  @media (max-width: 768px) {
+    .form-control.w-25 { width: 80% !important; }
+    h1 { font-size: 24px; }
+    .result { font-size: 20px; }
+    .symbol { font-size: 22px; }
+    .btn { font-size: 16px !important; }
+  }
+  .long-btn {
+  width: 400px;   /* boleh ubah ikut suka */
+}
+ footer {
+      margin-top: 40px 0;
+      font-size: 15px;
+      color: rgb(74, 61, 122);
+      font-style: italic;
+    }
+
+.input-custom {
+  width: 400px;      /* panjang ikut yang anda mahu */
+  max-width: 100%;   /* supaya responsive */
+  display: block;    /* pastikan duduk dalam baris sendiri */
+  margin-left: 0;    /* rapat kiri */
+  margin-right: auto;/* tolak ke kiri */
+}
+.title-container {
+  display: flex;
+  align-items: center;     /* selarikan tengah secara menegak */
+  justify-content: left; /* centerkan dalam container, boleh tukar ke space-between kalau nak jauh */
+  gap: 8px;               /* jarak antara gambar dan tajuk */
+}
+
+.title-image {
+  width: 80px;   /* ubah ikut saiz yang sesuai */
+  height: auto;
+}
+#title {
+  font-size: 2rem;   /* besarkan huruf (default h1 lebih kurang 2rem) */
+  font-weight: bold;   /* tebalkan kalau nak lebih jelas */
+  margin: 0;           /* buang jarak atas bawah kalau tak perlu */
+}
+.boxed {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 30px auto;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2),
+              0 5px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 1s ease forwards;
+  opacity: 0;
+  max-width: 700px;
+}
+
+/* Hover effect */
+.boxed:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+              0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Entry animation */
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.title-image,
+.animated-img {
+  animation: bounceIn 1.2s ease;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+h1, h5 {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+h1:hover, h5:hover {
+  color: #E52020;
+  transform: scale(1.05);
+}
+.result-section {
+  max-width: 640px;              /* container not full width */
+  margin: 40px auto;             /* gap from screen sides */
+  padding: 25px;
+  background: #fff;              /* clean background */
+  border-radius: 20px;           /* soft rounded corners */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* strong shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover animation */
+.result-section:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+}
+
+/* Optional entrance animation */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-section {
+  animation: fadeSlideIn 0.8s ease;
+}
+
+    #footer-text {
+    text-align: center;     /* center horizontally */
+    margin: 30px 0;         /* gap top & bottom */
+    font-style: italic;     /* italic font */
+  }
+  /* === Back to Top Button === */
+#backToTop {
+  display: inline-block !important; /* sentiasa nampak */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  font-size: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #333;
+  color: white;
+  cursor: pointer;
+}
+
+
+#backToTop:hover {
+  background: #0056b3;
+  transform: scale(1.1);
+}
+#title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.2rem;
+  text-align: center;
+  color: #2c3e50;
+  text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+
+  /* Animasi masuk */
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: fadeInSlide 1s ease-out forwards;
+}
+
+/* Keyframes animasi */
+@keyframes fadeInSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover effect supaya lebih interactive */
+#title:hover {
+  color: #3498db;
+  text-shadow: 4px 6px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease-in-out;
+}
+
+
+</style>
+</head>
+<body>
+
+<audio id="hoverSound" src="hover-sound.mp3" preload="auto"></audio>
+<!-- Action Buttons -->
+<button id="calculateBtn" class="floating-btn" onclick="scrollToResult()">Check</button>
+<button id="language-toggle" onclick="toggleLanguage()">→ Malay</button>
+
+<div class="container mt-5 text-center">
+  <div class="boxed">
+    <div class="title-container">
+  <img src="tim.gif" alt="BMI Animation" class="title-image">
+  <h1 id="title">BMI Calculator</h1>
+</div>
+
+    <hr>
+    <section class="result-section">
+      <h1 class="result-title" id="result-title">✅ Result:</h1>
+      <div class="result-box">
+        <span class="label" id="value-label">Value:</span>
+        <span class="result" id="result">...</span>
+      </div>
+      <br>
+      <div class="result-box">
+        <span class="label" id="symbol-label">Symbol:</span>
+        <span class="symbol" id="symbol">...</span>
+      </div>
+    </section>
+    <hr>
+    <h1 id="info-title">Enter Your Information</h1>
+    <div class="mb-3">
+
+      <label for="height"><strong id="height-label">Height (cm):</strong></label>
+      <input type="number" id="height" class="form-control input-custom">
+
+    </div>
+    <div class="mb-3">
+      <label for="weight"><strong id="weight-label">Weight (kg):</strong></label>
+      <input type="number" id="weight" class="form-control input-custom">
+
+    </div>
+    <button id="calculate-btn" class="btn btn-danger mt-2 long-btn" onclick="calculateBMI()">Calculate</button>
+
+    </div>
+
+  <div class="boxed">
+    <h1 id="bmi-title">What Is BMI (Body Mass Index)?</h1>
+    <h5 id="bmi-description">
+      It is a measurement used to assess whether a person has a healthy weight based on their height.
+    </h5>
+  </div>
+
+  <div class="boxed">
+    <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
+      <img src="cal.png" width="200" height="200" alt="BMI Calculator Image" class="animasi-img">
+      <div class="category-content text-start">
+        <h1 id="categories-title">Categories:</h1>
+        <h5>
+          <ul class="list-unstyled" id="categories-list">
+            <li style="color:blue;">✘ Underweight: BMI below 18.5</li>
+            <li style="color:green;">✔ Normal Weight: BMI between 18.5 and 24.9</li>
+            <li style="color:#FEBA17;">✘ Overweight: BMI between 25 and 29.9</li>
+            <li style="color:#E52020;">✘ Obese: BMI 30 and above</li>
+          </ul>
+        </h5>
+      </div>
+    </div>
+  </div>
+
+
+  
+ <button id="backToTop">↑</button>
+
+</div>
+
+
+<footer id="footer-text">
+  Crafted with ❤️ by Koleksi 77
+</footer>
+
+
+<script>
+  let isEnglish = true;
+
+  const languageTexts = {
+  en: {
+    toggle: "→ Malay",
+    title: "BMI Calculator",
+    footer: "Crafted with ❤️ by Koleksi 77",
+    resultTitle: "Result:",
+    valueLabel: "Value:",
+    symbolLabel: "Symbol:",
+    infoTitle: "Enter Your Information",
+    heightLabel: "Height (cm):",
+    weightLabel: "Weight (kg):",
+    bmiTitle: "What Is BMI (Body Mass Index)?",
+    bmiDesc: "It is a measurement used to assess whether a person has a healthy weight based on their height.",
+    categoriesTitle: "Categories:",
+    categoriesList: `
+      <li style="color:blue;">✘ Underweight: BMI below 18.5</li>
+      <li style="color:green;">✔ Normal Weight: BMI between 18.5 and 24.9</li>
+      <li style="color:#FEBA17;">✘ Overweight: BMI between 25 and 29.9</li>
+      <li style="color:#E52020;">✘ Obese: BMI 30 and above</li>
+    `,
+    actionLabel: "Calculate",
+    checkLabel: "Check",   // ✅ new property for your floating button
+    narration: (bmi, category) => `Your body mass index is ${bmi}, and it falls under the category ${category}.`,
+    resultText: (bmi, category) => `Your BMI value: ${bmi} · Category: ${category}.`,
+    alert: "Please enter valid numbers."
+  },
+  ms: {
+    toggle: "→ English",
+    title: "Kalkulator BMI",
+    footer: "Direka khas dengan ❤️ oleh Koleksi 77",
+    resultTitle: "Keputusan:",
+    valueLabel: "Nilai:",
+    symbolLabel: "Simbol:",
+    infoTitle: "Masukkan Maklumat Anda",
+    heightLabel: "Tinggi (cm):",
+    weightLabel: "Berat (kg):",
+    bmiTitle: "Apakah BMI (Indeks Jisim Badan)?",
+    bmiDesc: "Ia adalah ukuran yang digunakan untuk menilai sama ada seseorang mempunyai berat badan yang sihat berdasarkan ketinggiannya.",
+    categoriesTitle: "Kategori:",
+    categoriesList: `
+      <li style="color:blue;">✘ Berat Badan Rendah: BMI di bawah 18.5</li>
+      <li style="color:green;">✔ Berat Badan Normal: BMI antara 18.5 dan 24.9</li>
+      <li style="color:#FEBA17;">✘ Berat Badan Berlebihan: BMI antara 25 dan 29.9</li>
+      <li style="color:#E52020;">✘ Obes: BMI 30 dan ke atas</li>
+    `,
+    actionLabel: "Kira",
+    checkLabel: "Semak",   // ✅ Malay version
+    narration: (bmi, category) => `Indeks jisim badan anda adalah ${bmi}, dan ia berada dalam kategori ${category}.`,
+    resultText: (bmi, category) => `Nilai BMI anda: ${bmi} · Kategori: ${category}.`,
+    alert: "Sila masukkan nombor yang sah."
+  }
+};
+
+
+  function toggleLanguage() {
+  isEnglish = !isEnglish;
+  const lang = isEnglish ? "en" : "ms";
+  const texts = languageTexts[lang];
+
+  // Update all text content
+  document.getElementById("language-toggle").textContent = texts.toggle;
+  document.getElementById("title").textContent = texts.title;
+  document.getElementById("result-title").textContent = texts.resultTitle;
+  document.getElementById("value-label").textContent = texts.valueLabel;
+  document.getElementById("symbol-label").textContent = texts.symbolLabel;
+  document.getElementById("info-title").textContent = texts.infoTitle;
+  document.getElementById("height-label").textContent = texts.heightLabel;
+  document.getElementById("weight-label").textContent = texts.weightLabel;
+  document.getElementById("bmi-title").textContent = texts.bmiTitle;
+  document.getElementById("bmi-description").textContent = texts.bmiDesc;
+  document.getElementById("categories-title").textContent = texts.categoriesTitle;
+  document.getElementById("categories-list").innerHTML = texts.categoriesList;
+  document.getElementById("calculate-btn").textContent = texts.actionLabel;
+  document.getElementById("calculateBtn").textContent = texts.checkLabel; // floating button
+
+  // ✅ Update footer
+  document.getElementById("footer-text").textContent = texts.footer;
+}
+
+  
+
+  function calculateBMI() {
+    const height = parseFloat(document.getElementById("height").value);
+    const weight = parseFloat(document.getElementById("weight").value);
+    const result = document.getElementById("result");
+    const symbol = document.getElementById("symbol");
+    const lang = isEnglish ? "en" : "ms";
+    const texts = languageTexts[lang];
+
+    if (isNaN(height) || isNaN(weight)) {
+      alert(texts.alert);
+      return;
+    }
+
+    const heightM = height / 100;
+    const bmi = weight / (heightM ** 2);
+    const bmiRounded = bmi.toFixed(2);
+
+    let category, icon, color;
+    if (bmi < 18.5) {
+      category = isEnglish ? "Underweight" : "Berat Badan Rendah";
+      icon = "✘"; color = "blue";
+    } else if (bmi < 24.9) {
+      category = isEnglish ? "Normal Weight" : "Berat Badan Normal";
+      icon = "✔"; color = "green";
+    } else if (bmi < 29.9) {
+      category = isEnglish ? "Overweight" : "Berat Badan Berlebihan";
+      icon = "✘"; color = "#FEBA17";
+    } else {
+      category = isEnglish ? "Obese" : "Obes";
+      icon = "✘"; color = "red";
+    }
+
+    result.textContent = texts.resultText(bmiRounded, category);
+    result.style.color = color;
+    symbol.textContent = icon;
+    symbol.style.color = color;
+
+    const utterance = new SpeechSynthesisUtterance(texts.narration(bmiRounded, category));
+    utterance.lang = isEnglish ? "en-US" : "ms-MY";
+    utterance.rate = 1.05;
+    utterance.pitch = 0.9;
+
+    if (speechSynthesis.speaking) speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+
+  function scrollToResult() {
+    document.getElementById("result-title").scrollIntoView({ behavior: "smooth" });
+  }
+
+  // Hover sound effect
+  const hoverSound = document.getElementById("hoverSound");
+  document.querySelectorAll(".btn, .input-custom, .title-image, .animated-img").forEach(el => {
+    el.addEventListener("mouseenter", () => {
+      hoverSound.currentTime = 0;
+      hoverSound.play();
+    });
+  });
+
+  // Initialize AOS animation
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+
+  const backToTopBtn = document.getElementById("backToTop");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      backToTopBtn.style.display = "flex";
+    } else {
+      backToTopBtn.style.display = "none";
+    }
+  });
+
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+
+  
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
